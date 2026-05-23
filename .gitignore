@@ -1,0 +1,60 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Media & Static build files
+media/
+staticfiles/
+
+# Environment variables
+.env
+.env.*
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Pytest / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Migrations (optional)
+# */migrations/*
+# !*/migrations/__init__.py
+
+# mypy
+.mypy_cache/
+
+# Ruff / Black
+.ruff_cache/
+
+# Node modules (if using frontend tools)
+node_modules/
+
+# Celery
+celerybeat-schedule
+
+# Docker
+*.pid
+
+# Backup files
+*.bak
+*.swp
