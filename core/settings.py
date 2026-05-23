@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # Local Apps
     'accounts',
+    'products',
 ]
 
 MIDDLEWARE = [
@@ -43,6 +44,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins for CORS (not recommended for production)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173", # আপনার Vite-এর ডিফল্ট পোর্ট
+]
 
 ROOT_URLCONF = 'core.urls'
 
@@ -122,3 +126,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+
+# Media files কনফিগারেশন (নতুন যোগ করুন)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

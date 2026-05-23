@@ -1,0 +1,90 @@
+from django.db import models
+
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+    icon = models.ImageField(upload_to='categories/icons/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Brand(models.Model):
+    name = models.CharField(max_length=255)
+    logo = models.ImageField(upload_to='brands/logos/', blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
+
+class Product(models.Model):
+    name = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.IntegerField()
+    is_featured = models.BooleanField(default=False)
+    # ফ্রন্টএন্ডে ছবি দেখানোর জন্য thumbnail ফিল্ড অ্যাড করা হলো
+    thumbnail = models.ImageField(upload_to='products/thumbnails/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50) # e.g., '8GB/128GB' or 'Red'
+    price_adjustment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    stock = models.IntegerField(default=0)
+    sku = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.name}"
+    
+class Banner(models.Model):
+    POSITION_CHOICES = (
+        ('hero_carousel', 'Hero Carousel'),
+        ('hero_side_top', 'Hero Side Top'),
+        ('hero_side_bottom', 'Hero Side Bottom'),
+        ('mid_banner', 'Mid Banner'),
+        ('lower_mid_banner', 'Lower Mid Banner'),
+    )
+    title = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ImageField(upload_to='banners/')
+    position = models.CharField(max_length=50, choices=POSITION_CHOICES)
+    link = models.URLField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.position} - {self.title}"
+    
+# ডায়নামিক সেকশন (যেমন: New Arrivals, Trending)
+class DynamicSection(models.Model):
+    title = models.CharField(max_length=255)
+    products = models.ManyToManyField(Product, related_name='dynamic_sections')
+    is_active = models.BooleanField(default=True)
+    order = models.IntegerField(default=0, help_text="সেকশনটি কত নম্বরে দেখাবে")
+
+    def __str__(self):
+        return self.title
+
+# কাস্টমার রিভিউ
+class Review(models.Model):
+    customer_name = models.CharField(max_length=100)
+    rating = models.IntegerField(default=5)
+    comment = models.TextField()
+    is_verified = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.customer_name
+
+# ব্লগ সেকশন
+class Blog(models.Model):
+    title = models.CharField(max_length=255)
+    category = models.CharField(max_length=100, default="GADGETS")
+    excerpt = models.TextField(help_text="ব্লগের শর্ট ডেসক্রিপশন")
+    image = models.ImageField(upload_to='blogs/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
