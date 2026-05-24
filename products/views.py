@@ -29,13 +29,21 @@ class ProductDetailView(generics.RetrieveAPIView):
 # -------------------------
 class HomepageDataView(APIView):
     def get(self, request):
-        limited_sale = Product.objects.filter(stock__gt=0, stock__lt=10)[:5] 
-        exclusive_products = Product.objects.filter(is_featured=True)[:8]
-        blogs = Blog.objects.filter(is_active=True).order_by('-created_at')[:5]
+        limited_sale = Product.objects.filter(stock__gt=0, stock__lt=10)[:10] 
+        exclusive_products = Product.objects.filter(is_featured=True)[:10]
+        active_sections = DynamicSection.objects.filter(is_active=True).order_by('order')
+        reviews = Review.objects.filter(is_active=True).order_by('-id')[:3] 
+        blogs = Blog.objects.filter(is_active=True).order_by('-created_at')[:3]
+
+        # ইমেজের ফুল URL পাওয়ার জন্য context এ request পাস করা হচ্ছে
+        context = {'request': request}
 
         return Response({
-            'limited_sale': ProductSerializer(limited_sale, many=True).data,
-            'exclusive_products': ProductSerializer(exclusive_products, many=True).data,
+            'limited_sale': ProductSerializer(limited_sale, many=True, context=context).data,
+            'exclusive_products': ProductSerializer(exclusive_products, many=True, context=context).data,
+            'dynamic_sections': DynamicSectionSerializer(active_sections, many=True, context=context).data,
+            'reviews': ReviewSerializer(reviews, many=True, context=context).data,
+            'blogs': BlogSerializer(blogs, many=True, context=context).data,
         })
 
 # -------------------------
@@ -53,27 +61,6 @@ class BannerListView(generics.ListAPIView):
     queryset = Banner.objects.filter(is_active=True)
     serializer_class = BannerSerializer
     
-    
-class HomepageDataView(APIView):
-    def get(self, request):
-        # আগের ডেটাগুলো (৫+৫ = ১০টি করে প্রোডাক্ট)
-        limited_sale = Product.objects.filter(stock__gt=0, stock__lt=10)[:10] 
-        exclusive_products = Product.objects.filter(is_featured=True)[:10]
-
-        # নতুন ডেটাগুলো
-        active_sections = DynamicSection.objects.filter(is_active=True).order_by('order')
-        reviews = Review.objects.filter(is_active=True).order_by('-id')[:3] # লেটেস্ট ৩টি রিভিউ
-        blogs = Blog.objects.filter(is_active=True).order_by('-created_at')[:3] # লেটেস্ট ৩টি ব্লগ
-
-        return Response({
-            'limited_sale': ProductSerializer(limited_sale, many=True).data,
-            'exclusive_products': ProductSerializer(exclusive_products, many=True).data,
-            
-            # নতুন অ্যাড করা হলো
-            'dynamic_sections': DynamicSectionSerializer(active_sections, many=True).data,
-            'reviews': ReviewSerializer(reviews, many=True).data,
-            'blogs': BlogSerializer(blogs, many=True).data,
-        })
 
 # products/views.py এর শেষে যোগ করুন
 class BlogDetailView(generics.RetrieveAPIView):

@@ -1,10 +1,22 @@
 from rest_framework import serializers
 from .models import Blog, DynamicSection, Product, ProductVariant, Category, Brand, Banner, Review
 
+from rest_framework import serializers
+from .models import Category, Product
+
 class CategorySerializer(serializers.ModelSerializer):
+    # Proti category-r top 5 products dynamic bhabe anar jonno
+    top_products = serializers.SerializerMethodField()
+
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['id', 'name', 'slug', 'icon', 'top_products']
+
+    def get_top_products(self, obj):
+        # Oi category-r prothom 5-ti product kora hocche
+        products = Product.objects.filter(category=obj)[:5]
+        # Request context pass kora hocche jate image-er full link pay
+        return ProductSerializer(products, many=True, context=self.context).data
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:

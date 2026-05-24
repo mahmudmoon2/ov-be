@@ -21,10 +21,12 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     stock = models.IntegerField()
     is_featured = models.BooleanField(default=False)
     # ফ্রন্টএন্ডে ছবি দেখানোর জন্য thumbnail ফিল্ড অ্যাড করা হলো
     thumbnail = models.ImageField(upload_to='products/thumbnails/', blank=True, null=True)
+    
 
     def __str__(self):
         return self.name
@@ -44,8 +46,11 @@ class Banner(models.Model):
         ('hero_carousel', 'Hero Carousel'),
         ('hero_side_top', 'Hero Side Top'),
         ('hero_side_bottom', 'Hero Side Bottom'),
-        ('mid_banner', 'Mid Banner'),
-        ('lower_mid_banner', 'Lower Mid Banner'),
+        
+        # নতুন যোগ করা হলো আপনার স্পেসিফিক লেআউটের জন্য
+        ('category_banner', 'After Category (50-50)'), 
+        ('brand_banner', 'After Brands (100% Width)'), 
+        ('pre_review_banner', 'Before Reviews (60-40)'),
     )
     title = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to='banners/')
