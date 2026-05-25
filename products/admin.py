@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Blog, Category, Brand, DynamicSection, Product, ProductVariant, Banner, Review
-
+from .models import Coupon 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'slug')
@@ -62,3 +62,11 @@ class ReviewAdmin(admin.ModelAdmin):
 class BlogAdmin(admin.ModelAdmin):
     list_display = ('title', 'category', 'created_at', 'is_active')
     list_editable = ('is_active',)
+    
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount_amount', 'minimum_order_amount', 'valid_from', 'valid_to', 'is_active')
+    list_filter = ('is_active', 'valid_from', 'valid_to')
+    search_fields = ('code',)
+    list_editable = ('is_active',) # লিস্ট থেকেই অন/অফ করার জন্য

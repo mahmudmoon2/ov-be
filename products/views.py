@@ -12,6 +12,8 @@ from .serializers import (
     ReviewSerializer,
     ReviewSerializer
 )
+from rest_framework import status
+from .models import Coupon
 
 # -------------------------
 # Product Views
@@ -66,3 +68,42 @@ class BannerListView(generics.ListAPIView):
 class BlogDetailView(generics.RetrieveAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+    
+
+
+class ApplyCouponView(APIView):
+    def post(self, request):
+        # রিঅ্যাক্ট থেকে আসা ডেটা রিসিভ করা হচ্ছে
+        code = request.data.get('code')
+        cart_total = request.data.get('cart_total', 0)
+
+        try:
+            # Case-insensitive চেক (user test50 বা TEST50 যাই দিক কাজ করবে)
+            coupon = Coupon.objects.get(code__iexact=code)
+            
+            # কুপনের মেয়াদ বা অ্যাক্টিভ স্ট্যাটাস চেক
+            if not coupon.is_valid():
+                return Response({
+                    'valid': False, 
+                    'message': 'This coupon is expired or inactive.'
+                })
+            
+            # মিনিমাম অর্ডার অ্যামাউন্ট চেক
+            if float(cart_total) < float(coupon.minimum_order_amount):
+                return Response({
+                    'valid': False, 
+                    'message': f'Minimum order amount should be ৳{coupon.minimum_order_amount}'
+                })
+
+            # সব ঠিক থাকলে সাকসেস রেসপন্স
+            return Response({
+                'valid': True,
+                'discount_amount': coupon.discount_amount,
+                'message': 'Coupon applied successfully!'
+            })
+
+        except Coupon.DoesNotExist:
+            return Response({
+                'valid': False, 
+                'message': 'Invalid coupon code.'
+            })

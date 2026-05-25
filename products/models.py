@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -93,3 +94,21 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True, help_text="কুপন কোড (যেমন: EID50, NEWYEAR200)")
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="কত টাকা ডিসকাউন্ট হবে")
+    minimum_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="মিনিমাম কত টাকার অর্ডার করতে হবে")
+    valid_from = models.DateTimeField(help_text="কবে থেকে কুপনটি কাজ করবে")
+    valid_to = models.DateTimeField(help_text="কবে কুপনটির মেয়াদ শেষ হবে")
+    is_active = models.BooleanField(default=True, help_text="কুপনটি অ্যাক্টিভ আছে কি না")
+
+    def __str__(self):
+        return self.code
+
+    # কুপনটি বর্তমানে ভ্যালিড কি না তা চেক করার কাস্টম মেথড
+    def is_valid(self):
+        now = timezone.now()
+        return self.is_active and self.valid_from <= now <= self.valid_to

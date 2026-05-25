@@ -6,7 +6,8 @@ from .views import (
     HomepageDataView, 
     CategoryListView,
     BrandListView,
-    BannerListView
+    BannerListView,
+    ApplyCouponView,
 )
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     path('brands/', BrandListView.as_view(), name='brand-list'),
     path('banners/', BannerListView.as_view(), name='banner-list'),
     path('blog/<int:pk>/', BlogDetailView.as_view(), name='blog-detail'),
+    path('apply-coupon/', ApplyCouponView.as_view(), name='apply-coupon'),
 ]
